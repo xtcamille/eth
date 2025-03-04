@@ -19,6 +19,7 @@ package ethash
 import (
 	"bytes"
 	"errors"
+	"eth/core/vm"
 	"fmt"
 	"math/big"
 	"runtime"
@@ -308,7 +309,22 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
 func (ethash *Ethash) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
-	return CalcDifficulty(chain.Config(), time, parent)
+	return AddGradeFactor(CalcDifficulty(chain.Config(), time, parent))
+}
+
+// AddGradeFactor 将节点行为加入出块机制，降低后续挖矿难度
+func AddGradeFactor(difficulty *big.Int) *big.Int {
+	// 计算 factor = Grade + Alpha
+	factor := new(big.Int).Add(vm.Grade, vm.Alpha)
+	// 正常情况下，factor不为0，所以不会出现除数为0的情况
+	if factor.Sign() <= 0 {
+		return nil // 或 panic("invalid factor")
+	}
+	// 创建新的大整数保存结果（避免修改原始 difficulty）
+	result := new(big.Int).Set(difficulty)
+	// 执行除法: result = difficulty / factor
+	result.Div(result, factor)
+	return result
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns

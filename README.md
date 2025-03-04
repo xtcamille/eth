@@ -23,6 +23,12 @@ them using your favourite package manager. Once the dependencies are installed, 
 make geth
 ```
 
+or, to build on Windows:
+```shell
+cd cmd/geth
+go build -o 你的可执行文件路径存储位置\geth.exe    例如： D:\experiment\geth.exe
+```
+
 or, to build the full suite of utilities:
 
 ```shell
@@ -357,3 +363,4 @@ also included in our repository in the `COPYING.LESSER` file.
 The go-ethereum binaries (i.e. all code inside of the `cmd` directory) is licensed under the
 [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html), also
 included in our repository in the `COPYING` file.
+# eth
